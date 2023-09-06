@@ -305,7 +305,7 @@ class HM:
             # check if assignment is completed; if so, then return the assignment
             # otherwise there are multiple uncancelled zeros in the same column, retrieve the first processed matrix
             # and randomly make assignments for the uncancelled zeros
-            if cancel_count == (n - diff): # FIXED
+            if cancel_count == (n - diff):  # FIXED
                 done = True
             else:
                 done = False
@@ -314,7 +314,7 @@ class HM:
                     M = self.random_assign(recordM)
                     break
 
-        return M
+        return M  # FIXME: M should remove the added zero columns
 
 
 if __name__ == "__main__":
