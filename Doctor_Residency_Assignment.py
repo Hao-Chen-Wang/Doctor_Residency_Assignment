@@ -235,6 +235,67 @@ class HM:
             self.row_cancelled[i] = False
 
     """
+    uses greedy algorithm to find an assignment and the cost to compare with the Hungarian algorithm
+    
+    @:param matrix: array that contains raw data of rating from each candidate on the hospitals
+    @:param result: assignment result produced by the Hungarian algorithm
+    
+    @:return M: an assignment matrix that for each entry of '1', assign the candidate in the row to the hospital 
+                in the column
+    @:return cost: total cost of the assignment, defined as the sum of ratings from the assignment in the raw data array
+    """
+
+    def costWithGreedy(self, matrix, result):
+        self.n = len(matrix)
+        self.diff = self.n - len(matrix[0])
+        self.matrix = np.array(matrix)
+        n = self.n
+        diff = self.diff
+
+        # calculate the cost from assignment produced by Hungarian algorithm
+        costH = 0
+        for i in range(n):
+            for j in range(n - diff):
+                if result[i][j] == 1:
+                    costH += self.matrix[i][j]
+
+        # greedy algorithm by first rank all rating entries, then make assignment from the lowest possible rating to
+        # the highest
+        greedy = self.matrix[:, 0:(n-diff)]
+        order = greedy.reshape((1,-1))
+        order = order.argsort()
+        order = order.reshape((n, n-diff))
+        M = np.zeros((n, n-diff))
+        rowlist = []
+        for i in range(n):
+            rowlist.append(i)
+        collist = []
+        for j in range(n-diff):
+            collist.append(j)
+        dict = {}
+        for i in range(n):
+            for j in range(n-diff):
+                dict[order[i][j]] = (i, j)
+        assignedNum = 0
+        currentOrder = 0
+        cost = 0
+        while assignedNum != (n - diff):
+            (x, y) = dict.get(currentOrder)
+            currentOrder += 1
+            if x in rowlist and y in collist:
+                M[x][y] = 1
+                rowlist.remove(x)
+                collist.remove(y)
+                assignedNum += 1
+                cost += self.matrix[x][y]
+
+        print("Cost with Hungarian algorithm: ", costH)
+        print(M)
+        print("Cost with greedy algorithm: ", cost)
+
+        return M, cost
+
+    """
     main function that takes an array of raw rating, process it according to the Hungarian algorithm
     
     @:param matrix: array that contains raw data of rating from each candidate on the hospitals
@@ -314,14 +375,15 @@ class HM:
                     M = self.random_assign(recordM)
                     break
 
-        return M  # FIXME: M should remove the added zero columns
+        return M[:, 0:(n-diff)]  # FIXED
 
 
 if __name__ == "__main__":
     # 矩阵输入
     # 注释 DONE
-    # assessment
+    # assessment DONE
 
     Matrix = [[1, 1, 3], [1, 2, 7], [1, 2, 3], [1, 2, 3]]
     result = HM().main(Matrix)
     print(result)
+    HM().costWithGreedy(Matrix, result)
