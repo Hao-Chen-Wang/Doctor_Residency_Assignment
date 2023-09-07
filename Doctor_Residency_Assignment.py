@@ -261,20 +261,20 @@ class HM:
 
         # greedy algorithm by first rank all rating entries, then make assignment from the lowest possible rating to
         # the highest
-        greedy = self.matrix[:, 0:(n-diff)]
-        order = greedy.reshape((1,-1))
+        greedy = self.matrix[:, 0 : (n - diff)]
+        order = greedy.reshape((1, -1))
         order = order.argsort()
-        order = order.reshape((n, n-diff))
-        M = np.zeros((n, n-diff))
+        order = order.reshape((n, n - diff))
+        M = np.zeros((n, n - diff))
         rowlist = []
         for i in range(n):
             rowlist.append(i)
         collist = []
-        for j in range(n-diff):
+        for j in range(n - diff):
             collist.append(j)
         dict = {}
         for i in range(n):
-            for j in range(n-diff):
+            for j in range(n - diff):
                 dict[order[i][j]] = (i, j)
         assignedNum = 0
         currentOrder = 0
@@ -309,7 +309,7 @@ class HM:
         self.matrix = matrix
         self.calculate()
         n = self.n
-        diff = self.diff  # FIXED
+        diff = self.diff
         cancel_count = 0
         cancel_count1 = 0
         M = np.zeros((n, n))
@@ -336,7 +336,7 @@ class HM:
         # if number of zero cancellation matches the number of hospitals, the assignment is completed
         # otherwise continue with reduction and cancellation
         cancel_count = cancel_count + cancel_count1
-        if cancel_count < (n - diff):  # FIXED
+        if cancel_count < (n - diff):
             done = False
             self.changematrix()
         else:
@@ -366,7 +366,7 @@ class HM:
             # check if assignment is completed; if so, then return the assignment
             # otherwise there are multiple uncancelled zeros in the same column, retrieve the first processed matrix
             # and randomly make assignments for the uncancelled zeros
-            if cancel_count == (n - diff):  # FIXED
+            if cancel_count == (n - diff):
                 done = True
             else:
                 done = False
@@ -375,14 +375,10 @@ class HM:
                     M = self.random_assign(recordM)
                     break
 
-        return M[:, 0:(n-diff)]  # FIXED
+        return M[:, 0 : (n - diff)]
 
 
 if __name__ == "__main__":
-    # 矩阵输入
-    # 注释 DONE
-    # assessment DONE
-
     Matrix = [[1, 1, 3], [1, 2, 7], [1, 2, 3], [1, 2, 3]]
     result = HM().main(Matrix)
     print(result)
